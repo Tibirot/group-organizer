@@ -1,38 +1,29 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
-import Group from "../../models/group.model";
 import Person from "../../models/person.model";
+import GroupsContext from '../../context/groups-context';
+import PersonsContext from '../../context/persons-context';
 
 interface Props {
-  groups: Group[],
   personToEdit?: Person,
   variant: string,
   editMode: boolean
 }
 
-const AddEditPersonModal: FC<Props> = ({ groups, variant, personToEdit, editMode }) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+const AddEditPersonModal: FC<Props> = ({ variant, personToEdit, editMode }) => {
   const [show, setShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<Person>(personToEdit ?? new Person());
+  const {groups} = useContext(GroupsContext);
+  const { editPerson, addPerson } = useContext(PersonsContext);
 
   const modalTitle = editMode ? 'Edit' : 'Add Person'
 
   const submitData = () => {
     if (editMode) {
-      const reqOpt = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      };
-      fetch(`${baseUrl}/editPerson/${personToEdit?.idPerson}`, reqOpt);
+      editPerson(formData, personToEdit?.idPerson ?? 0);
       setFormData(new Person());
     } else {
-      const reqOpt = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      };
-      fetch(`${baseUrl}/addperson`, reqOpt);
+      addPerson(formData);
       setFormData(new Person());
     }
   }

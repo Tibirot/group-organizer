@@ -1,59 +1,30 @@
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
-import Group from "../../models/group.model";
-import Person from "../../models/person.model";
 import AddEditPersonModal from "./add-edit-person-modal";
 import PersonCard from "./person-card";
+import PersonsContext from '../../context/persons-context';
 
 
 const Persons = () => {
-  const [persons, setPersons] = useState<Person[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [groups, setGroups] = useState<Group[]>([]);
+  const {persons} = useContext(PersonsContext);
 
-  const apiUrl = process.env.REACT_APP_API_URL;
-
-  const getAllPersons = async () => {
-    const response = await fetch(`${apiUrl}/persons`);
-    const data = await response.json();
-    setPersons(data as Person[]);
-    setLoading(false);
-  };
-
-  const getGroups = async () => {
-    const response = await fetch(`${apiUrl}/groups`);
-    const data = await response.json();
-    setGroups(data as Group[]);
-  };
-
-  useEffect(() => {
-    getAllPersons();
-    getGroups();
-
-    return () => { };
-  }, [])
-
-  if (!loading) {
-    return (
-      <div className="container">
-        <div style={{ marginTop: "1rem" }} className="d-flex justify-content-center">
-          <AddEditPersonModal groups={groups} variant={'primary'} editMode={false} />
-        </div>
-        <Row lg={3}>
-          {persons.map(person => {
-            return (
-              <Col key={`col-${person.idPerson}`} className="d-flex">
-                <PersonCard key={person.idPerson} person={person} groups={groups}/>
-              </Col>
-            )
-          })}
-        </Row>
+  return (
+    <div className="container">
+      <div style={{ marginTop: "1rem" }} className="d-flex justify-content-center">
+        <AddEditPersonModal variant={'primary'} editMode={false} />
       </div>
-    );  
-  } else {
-    return <h1>Loading....</h1>
-  }
-  
+      <Row lg={3}>
+        {persons.map(person => {
+          return (
+            <Col key={`col-${person.idPerson}`} className="d-flex">
+              <PersonCard key={person.idPerson} person={person}/>
+            </Col>
+          )
+        })}
+      </Row>
+    </div>
+  )
+
 }
 
 export default Persons;

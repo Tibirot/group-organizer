@@ -1,38 +1,28 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import Group from "../../models/group.model";
 import Person from "../../models/person.model";
+import GroupsContext from '../../context/groups-context';
 
 interface Props {
-  groups: Group[],
   groupToEdit?: Group,
   variant: string,
   editMode: boolean
 }
 
-const AddEditGroupModal: FC<Props> = ({ groups, variant, groupToEdit, editMode }) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+const AddEditGroupModal: FC<Props> = ({ variant, groupToEdit, editMode }) => {
   const [show, setShow] = useState<boolean>(false);
   const [formData, setFormData] = useState<Group>(groupToEdit ?? new Person());
+  const {groups, addGroup, editGroup} = useContext(GroupsContext);
 
   const modalTitle = editMode ? 'Edit' : 'Add Group'
 
   const submitData = () => {
     if (editMode) {
-      const reqOpt = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      };
-      fetch(`${baseUrl}/editgroup/${groupToEdit?.idGroup}`, reqOpt);
+      editGroup(formData, groupToEdit?.idGroup ?? 0);
       setFormData(new Group());
     } else {
-      const reqOpt = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      };
-      fetch(`${baseUrl}/addgroup`, reqOpt);
+      addGroup(formData);
       setFormData(new Group());
     }
   }
@@ -79,7 +69,13 @@ const AddEditGroupModal: FC<Props> = ({ groups, variant, groupToEdit, editMode }
               <Form.Label>Group</Form.Label>
               <Form.Select aria-label="Default select example" value={formData?.assignedGroupId} onChange={onMutate}>
                 <option key="0" value={0}> No group</option>
-                {groups.map(group => <option key={group.idGroup} value={group.idGroup}>{group.name}</option>)}
+                {
+                  groups.map(group => {
+                    if (group.idGroup !== groupToEdit?.idGroup) {
+                      return (<option key={group.idGroup} value={group.idGroup}>{group.name}</option>);
+                    }
+                  })
+                }
               </Form.Select>
             </Form.Group>
           </Form>

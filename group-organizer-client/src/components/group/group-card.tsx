@@ -1,25 +1,24 @@
 import moment from 'moment';
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { Button, Card, ListGroup, ListGroupItem } from 'react-bootstrap';
 import Group from '../../models/group.model';
 import AddEditGroupModal from './add-edit-group-modal';
+import GroupsContext from '../../context/groups-context';
 
 interface Props {
-  group: Group,
-  groups: Group[]
+  group: Group
 }
 
-const GroupCard: FC<Props> = ({ group, groups }) => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+const GroupCard: FC<Props> = ({ group }) => {
+
+  const {groups, deleteGroup} = useContext(GroupsContext);
+
   const assignedGroup = groups.find((grp) => grp.idGroup === group.assignedGroupId);
   const dateCreated = moment(group.dateCreated?.toString()).format('MMMM Do YYYY, h:mm a');
   const dateModified = moment(group.dateModified).format('MMMM Do YYYY, h:mm a');
 
   const handleDelete = () => {
-    const reqOpt = {
-      method: 'DELETE',
-    };
-    fetch(`${baseUrl}/deletegroup/${group.idGroup}`, reqOpt);
+    deleteGroup(group.idGroup ?? 0);
   }
 
   return (
@@ -33,7 +32,7 @@ const GroupCard: FC<Props> = ({ group, groups }) => {
         <ListGroupItem><b>Modified:</b> {dateModified}</ListGroupItem>
         <ListGroupItem><b>Group:</b> {group.assignedGroupId ? assignedGroup?.name : 'Not in a group'}</ListGroupItem>
         <ListGroupItem><div className="d-flex justify-content-center ">
-          <AddEditGroupModal groupToEdit={group} groups={groups} variant={'success'} editMode={true} />
+          <AddEditGroupModal groupToEdit={group} variant={'success'} editMode={true} />
           <Button style={{ marginLeft: '3rem' }} variant="danger" onClick={handleDelete}>
             Delete
           </Button>

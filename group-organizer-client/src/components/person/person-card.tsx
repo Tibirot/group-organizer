@@ -1,27 +1,26 @@
 import moment from "moment";
-import { FC } from "react";
+import { FC, useContext } from "react";
 import { Button, Card, ListGroup, ListGroupItem } from "react-bootstrap";
-import Group from "../../models/group.model";
 import Person from '../../models/person.model';
 import AddEditPersonModal from "./add-edit-person-modal";
+import GroupsContext from '../../context/groups-context';
+import PersonsContext from '../../context/persons-context';
 
 interface Props { 
   person: Person,
-  groups: Group[]
 }
 
-const PersonCard: FC<Props> = ({ person, groups }): JSX.Element => {
-  const baseUrl = process.env.REACT_APP_API_URL;
+const PersonCard: FC<Props> = ({ person }): JSX.Element => {
+  const {groups} = useContext(GroupsContext);
+  const { deletePerson } = useContext(PersonsContext);
+
   const assignedGroup = groups.find((group) => group.idGroup === person.assignedGroupId);
   const dateCreated = moment(person.dateCreated?.toString()).format('MMMM Do YYYY, h:mm a');
   const dateModified = moment(person.dateModified).format('MMMM Do YYYY, h:mm a');
 
-  const handleDelete = (e: any) => {
-    const reqOpt = {
-      method: 'DELETE',
-    };
-    fetch(`${baseUrl}/deleteperson/${person.idPerson}`, reqOpt);
-  } 
+  const handleDelete = () => {
+    deletePerson(person.idPerson ?? 0);
+  }
 
   return (
     <Card style={{ width: '18rem', margin: '1rem' }} className="flex-fill" key={person.idPerson}>
@@ -36,7 +35,7 @@ const PersonCard: FC<Props> = ({ person, groups }): JSX.Element => {
         <ListGroupItem><b>Group:</b> {person.assignedGroupId ? assignedGroup?.name: 'Not in a group'}</ListGroupItem>
         <ListGroupItem>
           <div className="d-flex justify-content-center ">
-            <AddEditPersonModal personToEdit={person} groups={groups} variant={'success'} editMode={true} />
+            <AddEditPersonModal personToEdit={person} variant={'success'} editMode={true} />
             <Button style={{marginLeft: '3rem'}} variant="danger" onClick={handleDelete}>
               Delete
             </Button>

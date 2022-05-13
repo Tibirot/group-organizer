@@ -1,47 +1,30 @@
-import { useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { Col, Row } from "react-bootstrap";
-import Group from "../../models/group.model";
 import AddEditGroupModal from "./add-edit-group-modal";
 import GroupCard from './group-card';
+import GroupsContext from '../../context/groups-context';
 
 const Groups = () => {
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const {groups} = useContext(GroupsContext);
 
-  useEffect(() => {
-    getAllGroups();
-  }, []);
-  
-  const getAllGroups = async () => {
-    const apiUrl = process.env.REACT_APP_API_URL;
-    const response = await fetch(`${apiUrl}/groups`);
-    const data = await response.json();
-    setGroups(data as Group[]);
-    setLoading(false);
-  }
 
-  if (!loading) {
-    return (
-      <div className="container">
-        <div style={{ marginTop: "1rem" }} className="d-flex justify-content-center">
-          <AddEditGroupModal groups={groups} variant={'primary'} editMode={false} />
-        </div>
-        <Row lg={3}>
-          {groups.map(group => {
-            return (
-              <Col key={`col-${group.idGroup}`} className="d-flex">
-                <GroupCard key={group.idGroup} group={group} groups={groups}/>
-              </Col>
-            ) 
-          })}
-        </Row>
+  return (
+    <div className="container">
+      <div style={{ marginTop: "1rem" }} className="d-flex justify-content-center">
+        <AddEditGroupModal variant={'primary'} editMode={false} />
       </div>
-    )
-  } else {
-    return (
-      <h1>Loading ....</h1>
-    )
-  }
+      <Row lg={3}>
+        {groups.map(group => {
+          return (
+            <Col key={`col-${group.idGroup}`} className="d-flex">
+              <GroupCard key={group.idGroup} group={group}/>
+            </Col>
+          ) 
+        })}
+      </Row>
+    </div>
+  )
+ 
   
 }
 
