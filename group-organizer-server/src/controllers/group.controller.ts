@@ -57,7 +57,7 @@ router.put('/editgroup/:id', (req, res) => {
 router.delete('/deletegroup/:id', (req, res) => {
   if (typeof +req.params.id !== 'number') res.send('Invalid id type');
 
-  personRepo.delete({ assignedGroup: +req.params.id });
+  personRepo.delete({ assignedGroupId: +req.params.id });
   groupRepo.delete({ idGroup: +req.params.id });
 
   res.sendStatus(200);

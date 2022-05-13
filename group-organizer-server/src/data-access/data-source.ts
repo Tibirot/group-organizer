@@ -10,7 +10,6 @@ const dataSource = new DataSource({
   password: '!My@Sql#1',
   database: 'group-organizer-db',
   entities: [Person, Group],
-  synchronize: true,
   logging: false
 });
 

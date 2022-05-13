@@ -1,9 +1,11 @@
 import "reflect-metadata";
 import express from 'express';
+import cors from 'cors';
 import bodyParser from "body-parser";
 import * as personController from './controllers/person.controller';
 import * as groupController from './controllers/group.controller';
 import * as db from './data-access/data-source';
+
 
 
 export class App {
@@ -24,6 +26,7 @@ export class App {
   }
 
   private initExpressMiddleware() {
+    this.srv.use(cors());
     this.srv.use((req, res, next) => {
       const start = Date.now();
       next();
@@ -36,6 +39,9 @@ export class App {
     this.srv.use(bodyParser.json());
     this.srv.use('/', personController.router);
     this.srv.use('/', groupController.router);
+    this.srv.get('/', (req, res) => {
+      res.send('Server is running');
+    })
   }
 }
 export default new App();

@@ -21,6 +21,6 @@ export class Person extends BaseEntity {
   @Column()
   dateModified?: Date; 
 
-  @ManyToOne(() => Group, (group) => group.idGroup)
-  assignedGroup?: number;
+  @Column()
+  assignedGroupId?: number;
 }

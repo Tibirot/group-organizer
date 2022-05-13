@@ -21,6 +21,8 @@ router.get('/persons/:id', (req, res) => {
 
 router.post('/addperson', (req, res) => {
   const personToAdd = req.body as Partial<Person>;
+  console.log(req.body);
+  
  
   if (!personToAdd.dateCreated) {
     personToAdd.dateCreated = new Date();
