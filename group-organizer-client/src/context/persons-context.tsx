@@ -59,10 +59,7 @@ export const PersonsProvider = ({ children }: any) => {
 
   useEffect(() => {
     getAllPersons();
-
-    return () => { }
   }, [persons]);
-
 
   return (
     <PersonsContext.Provider value={{ persons, deletePerson, addPerson, editPerson }}>{children}</PersonsContext.Provider>

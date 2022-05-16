@@ -58,8 +58,6 @@ export const GroupsProvider = ({ children }: any) => {
 
   useEffect(() => {
     getAllGroups();
-  
-    return () => {}
   }, [groups])
   
 
